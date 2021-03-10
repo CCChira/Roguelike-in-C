@@ -13,6 +13,7 @@ int screenSetUp();
 int mapSetUp();
 int processInput(int ch, pPlayer user);
 int playerMove(int y, int x, pPlayer user);
+int checkPos(int newY, int newX, pPlayer user);
 pPlayer playerSetUp();
 
 int main() {
@@ -52,40 +53,47 @@ int screenSetUp() {
 }
 
 int mapSetUp() {
-    mvprintw(13, 13, "........");
+    mvprintw(13, 13, "--------");
     mvprintw(14, 13, "|......|");
     mvprintw(15, 13, "|......|");
     mvprintw(16, 13, "|......|");
-    mvprintw(17, 13, "........");
+    mvprintw(17, 13, "--------");
     return 0;
 }
 
 int processInput(int ch, pPlayer user) {
+    int newY;
+    int newX;
     switch(ch) {
         /*move up*/
         case 'w':
         case 'W':
-            playerMove(user->yPos - 1, user->xPos, user);
+            newY = user->yPos - 1;
+            newX = user->xPos;
             break;
         /*move down*/
         case 's':
         case 'S':
-            playerMove(user->yPos + 1, user->xPos, user);
+            newY = user->yPos + 1;
+            newX = user->xPos;
             break;
         /*move left*/
         case 'a':
         case 'A':
-            playerMove(user->yPos, user->xPos - 1, user);
+            newY = user->yPos;
+            newX = user->xPos - 1;
             break;
         /*move right*/
         case 'd':
         case 'D':
-            playerMove(user->yPos , user->xPos + 1, user);
+            newY = user->yPos;
+            newX = user->xPos + 1;
             break;
 
         default:
             break;
     }
+    checkPos(newY, newX, user);
 }
 int playerMove(int y, int x, pPlayer user) {
     mvprintw(user->yPos, user->xPos,  ".");
@@ -94,5 +102,18 @@ int playerMove(int y, int x, pPlayer user) {
     user->xPos = x;
 
     mvprintw(user->yPos, user->xPos, "@");
+    move(user->yPos, user->xPos);
     return 0;
+}
+
+int checkPos(int newY, int newX, pPlayer user) {
+    int space;
+    switch(mvinch(newY, newX)) {
+        case '.':
+            playerMove(newY, newX, user);
+            break;
+        default:
+            move(user->yPos, user->xPos);
+            break;
+    }
 }
